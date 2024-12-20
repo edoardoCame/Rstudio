@@ -1,0 +1,126 @@
+Sure! Hypothesis testing is a statistical method that helps in making decisions about a population parameter based on a sample statistic. In R, you can perform hypothesis testing using different test statistics such as the z-score, chi-squared statistic, and t-statistic. I'll explain each of these with examples, including the commands for calculating the respective statistic, showing the critical statistic, and comparing them.
+
+### 1. Z-score Test
+
+The z-score test is used when you know the population standard deviation and the sample size is large (n \> 30).
+
+#### Example Scenario:
+
+You want to test if the mean weight of a sample of 50 people is significantly different from the population mean of 70 kg, with a known population standard deviation of 10 kg.
+
+#### Commands:
+
+```{r}
+# Sample data
+sample_mean <- 72
+population_mean <- 70
+population_sd <- 10
+sample_size <- 50
+
+# Calculate z-score
+z_score <- (sample_mean - population_mean) / (population_sd / sqrt(sample_size))
+z_score
+
+# Determine critical value for 95% confidence level (two-tailed test)
+alpha <- 0.05
+z_critical <- qnorm(1 - alpha/2)
+z_critical
+
+# Compare z-score with critical value
+if (abs(z_score) > z_critical) {
+  print("Reject the null hypothesis")
+} else {
+  print("Fail to reject the null hypothesis")
+}
+```
+
+### 2. Chi-squared Test
+
+The chi-squared test is used to test the independence of two categorical variables or to test the goodness of fit of a distribution.
+
+#### Example Scenario:
+
+You want to test if the observed frequencies of a categorical variable differ from the expected frequencies.
+
+#### Commands:
+
+```{r}
+# Observed and expected frequencies
+observed <- c(50, 30, 20)
+expected <- c(40, 40, 20)
+
+# Calculate chi-squared statistic
+chi_squared_stat <- sum((observed - expected)^2 / expected)
+chi_squared_stat
+
+# Determine critical value for 95% confidence level (df = number of categories - 1)
+alpha <- 0.05
+df <- length(observed) - 1
+chi_squared_critical <- qchisq(1 - alpha, df)
+chi_squared_critical
+
+# Compare chi-squared statistic with critical value
+if (chi_squared_stat > chi_squared_critical) {
+  print("Reject the null hypothesis")
+} else {
+  print("Fail to reject the null hypothesis")
+}
+```
+
+### 3. T-test
+
+The t-test is used when the population standard deviation is unknown and the sample size is small (n \<= 30).
+
+#### Example Scenario:
+
+You want to test if the mean weight of a sample of 15 people is significantly different from the population mean of 70 kg.
+
+#### Commands:
+
+```{r}
+# Sample data
+sample <- c(68, 72, 71, 69, 70, 73, 67, 74, 65, 66, 72, 71, 68, 69, 70)
+population_mean <- 70
+
+# Perform t-test
+t_test <- t.test(sample, mu = population_mean)
+t_test
+
+# Extract t-statistic and p-value
+t_statistic <- t_test$statistic
+p_value <- t_test$p.value
+
+# Determine critical value for 95% confidence level (two-tailed test)
+alpha <- 0.05
+t_critical <- qt(1 - alpha/2, df = length(sample) - 1)
+t_critical
+
+# Compare t-statistic with critical value or p-value with alpha
+if (abs(t_statistic) > t_critical) {
+  print("Reject the null hypothesis")
+} else {
+  print("Fail to reject the null hypothesis")
+}
+
+# Alternatively, using p-value
+if (p_value < alpha) {
+  print("Reject the null hypothesis")
+} else {
+  print("Fail to reject the null hypothesis")
+}
+```
+
+### Summary of Commands:
+
+-   **Z-score Test:**
+    -   `qnorm()`: To find the critical z-value.
+    -   `z_score`: Calculation of the z-score.
+-   **Chi-squared Test:**
+    -   `qchisq()`: To find the critical chi-squared value.
+    -   `chi_squared_stat`: Calculation of the chi-squared statistic.
+-   **T-test:**
+    -   `t.test()`: To perform the t-test.
+    -   `qt()`: To find the critical t-value.
+    -   `t_test$statistic` and `t_test$p.value`: To extract the t-statistic and p-value from the t-test result.
+
+In all these examples, you compare the calculated statistic with the critical value to decide whether to reject the null hypothesis. Alternatively, for the t-test, you can compare the p-value with the significance level (alpha).
