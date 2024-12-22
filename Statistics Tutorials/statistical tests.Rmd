@@ -1,4 +1,3 @@
-Sure! Hypothesis testing is a statistical method that helps in making decisions about a population parameter based on a sample statistic. In R, you can perform hypothesis testing using different test statistics such as the z-score, chi-squared statistic, and t-statistic. I'll explain each of these with examples, including the commands for calculating the respective statistic, showing the critical statistic, and comparing them.
 
 ### 1. Z-score Test
 
