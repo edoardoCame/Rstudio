@@ -1,0 +1,23 @@
+---
+title: "serie11 chitest"
+output: html_document
+---
+
+![](images/Screenshot%202024-12-19%20alle%2017.59.32.png)
+
+```{r}
+
+dati <- matrix(c(52, 6, 2, 55, 12, 4, 47, 18, 4), nrow = 3, byrow = TRUE)
+
+# Test Chi-Quadro
+test_chi2 <- chisq.test(dati)
+
+# Risultati
+print(test_chi2)
+
+if (test_chi2$p.value <= 0.05) {
+  print("Rifiutare H0: C'è una relazione significativa tra rendimento scolastico e situazione familiare.")
+} else {
+  print("Non possiamo rifiutare H0.")
+}
+```
