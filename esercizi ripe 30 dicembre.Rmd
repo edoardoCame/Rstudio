@@ -1,0 +1,220 @@
+---
+title: "esercizi ripe 30 dicembre"
+output: html_document
+---
+
+### Esercizio 1: Determina se un numero è pari o dispari
+
+Scrivi una funzione in R che prenda un numero come input e utilizzi un'istruzione `if-else` per determinare se il numero è pari o dispari.
+
+#### Soluzione:
+
+``` r
+is_even_or_odd <- function(number) {
+  if (number %% 2 == 0) {
+    return("pari")
+  } else {
+    return("dispari")
+  }
+}
+
+# Esempio di utilizzo
+print(is_even_or_odd(4))  # Stampa "pari"
+print(is_even_or_odd(7))  # Stampa "dispari"
+```
+
+### Esercizio 2: Calcola la somma dei numeri da 1 a n
+
+Scrivi una funzione in R che prenda un numero `n` come input e utilizzi un ciclo `for` per calcolare la somma di tutti i numeri da 1 a `n`.
+
+#### Soluzione:
+
+``` r
+sum_to_n <- function(n) {
+  sum <- 0
+  for (i in 1:n) {
+    sum <- sum + i
+  }
+  return(sum)
+}
+
+# Esempio di utilizzo
+print(sum_to_n(5))  # Stampa 15
+print(sum_to_n(10)) # Stampa 55
+```
+
+### Esercizio 3: Trova i numeri primi fino a n
+
+Scrivi una funzione in R che prenda un numero `n` come input e utilizzi un ciclo `for` e istruzioni `if-else` per trovare tutti i numeri primi fino a `n`.
+
+#### Soluzione:
+
+``` r
+is_prime <- function(number) {
+  if (number <= 1) {
+    return(FALSE)
+  }
+  for (i in 2:sqrt(number)) {
+    if (number %% i == 0) {
+      return(FALSE)
+    }
+  }
+  return(TRUE)
+}
+
+
+
+primes_up_to_n <- function(n) {
+  primes <- c()
+  for (i in 2:n) {
+    if (is_prime(i)) {
+      primes <- c(primes, i)
+    }
+  }
+  return(primes)
+}
+
+# Esempio di utilizzo
+print(primes_up_to_n(10)) # Stampa 2 3 5 7
+print(primes_up_to_n(20)) # Stampa 2 3 5 7 11 13 17 19
+```
+
+### Esercizio 4: Calcola il fattoriale di un numero
+
+Scrivi una funzione in R che prenda un numero `n` come input e utilizzi un ciclo `for` per calcolare il fattoriale di `n`.
+
+#### Soluzione:
+
+```{r}
+factorial <- function(n) {
+  result <- 1
+  for (i in 1:n) {
+    result <- result * i
+  }
+  return(result)
+}
+
+# Esempio di utilizzo
+print(factorial(5))  # Stampa 120
+print(factorial(7))  # Stampa 5040
+```
+
+### Esercizio 5: Filtra i numeri pari da un vettore
+
+Scrivi una funzione in R che prenda un vettore di numeri come input e utilizzi un ciclo `for` e un'istruzione `if-else` per restituire un nuovo vettore contenente solo i numeri pari.
+
+#### Soluzione:
+
+``` r
+filter_even_numbers <- function(numbers) {
+  even_numbers <- c()
+  for (number in numbers) {
+    if (number %% 2 == 0) {
+      even_numbers <- c(even_numbers, number)
+    }
+  }
+  return(even_numbers)
+}
+
+# Esempio di utilizzo
+print(filter_even_numbers(c(1, 2, 3, 4, 5, 6))) # Stampa 2 4 6
+print(filter_even_numbers(c(10, 15, 20, 25)))   # Stampa 10 20
+```
+
+### Esercizio 6: Conta le occorrenze di ciascun elemento in un vettore
+
+Scrivi una funzione in R che prenda un vettore come input e utilizzi un ciclo `for` e istruzioni `if-else` per contare le occorrenze di ciascun elemento nel vettore, restituendo un elenco con gli elementi e le loro occorrenze.
+
+#### Soluzione:
+
+```{r}
+
+count_occurrences <- function(vec) {
+  counts <- list()
+  for (item in vec) {
+    if (item %in% names(counts)) {
+      counts[[item]] <- counts[[item]] + 1
+    } else {
+      counts[[item]] <- 1
+    }
+  }
+  return(counts)
+}
+
+# Esempio di utilizzo
+print(count_occurrences(c(1, 2, 2, 3, 3, 3, 4, 4, 4, 4)))
+```
+
+### Esercizio 7: Calcola la media dei numeri pari in un vettore
+
+Scrivi una funzione in R che prenda un vettore di numeri come input e utilizzi un ciclo `for` e istruzioni `if-else` per calcolare la media dei numeri pari nel vettore.
+
+#### Soluzione:
+
+``` r
+mean_of_even_numbers <- function(vec) {
+  sum <- 0
+  count <- 0
+  for (num in vec) {
+    if (num %% 2 == 0) {
+      sum <- sum + num
+      count <- count + 1
+    }
+  }
+  if (count == 0) {
+    return(NA)  # Se non ci sono numeri pari, restituisce NA
+  } else {
+    return(sum / count)
+  }
+}
+
+# Esempio di utilizzo
+print(mean_of_even_numbers(c(1, 2, 3, 4, 5, 6))) # Stampa 4
+print(mean_of_even_numbers(c(1, 3, 5)))         # Stampa NA
+```
+
+# DA FINIRE QUESTI!!
+
+### Esercizio 9: Verifica se una stringa è un palindromo
+
+Scrivi una funzione in R che prenda una stringa come input e utilizzi un ciclo `for` e istruzioni `if-else` per verificare se la stringa è un palindromo.
+
+#### Soluzione:
+
+``` r
+is_palindrome <- function(s) {
+  len <- nchar(s)
+  for (i in 1:(len / 2)) {
+    if (substr(s, i, i) != substr(s, len - i + 1, len - i + 1)) {
+      return(FALSE)
+    }
+  }
+  return(TRUE)
+}
+
+# Esempio di utilizzo
+print(is_palindrome("radar"))    # Stampa TRUE
+print(is_palindrome("hello"))    # Stampa FALSE
+print(is_palindrome("level"))    # Stampa TRUE
+```
+
+### Esercizio 10: Trova il massimo comune divisore di due numeri
+
+Scrivi una funzione in R che prenda due numeri come input e utilizzi un ciclo `for` e istruzioni `if-else` per trovare il massimo comune divisore (GCD) di due numeri.
+
+#### Soluzione:
+
+``` r
+gcd <- function(a, b) {
+  while (b != 0) {
+    temp <- b
+    b <- a %% b
+    a <- temp
+  }
+  return(a)
+}
+
+# Esempio di utilizzo
+print(gcd(48, 18))  # Stampa 6
+print(gcd(56, 98))  # Stampa 14
+```

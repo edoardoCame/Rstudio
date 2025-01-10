@@ -1,0 +1,232 @@
+---
+title: "esercizi aggiuntivi"
+output: pdf_document
+date: "2024-12-30"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Esercizio 1: Ottimizzazione di una Funzione Quadratica (Livello Principiante)
+
+Scrivi una funzione quadratica in R e usa l'ottimizzazione numerica per trovare il minimo.
+
+1.  Definisci la seguente funzione quadratica: $f(x) = (x - 3)^2 + 4$.
+2.  Usa la funzione `optimize` di R per trovare il valore di $x$ che minimizza $f(x)$.
+
+``` r
+# Definisci la funzione quadratica
+f <- function(x) {
+  (x - 3)^2 + 4
+}
+
+# Usa optimize per trovare il minimo
+result <- optimize(f, c(-10, 10))
+
+# Stampa il risultato
+cat("Il minimo si trova a x =", result$minimum, "con valore f(x) =", result$objective, "\n")
+```
+
+### Esercizio 2: Ottimizzazione di una Funzione Multi-Variabile (Livello Intermedio)
+
+Scrivi una funzione in due variabili e usa l'ottimizzazione numerica per trovare il minimo.
+
+1.  Definisci la seguente funzione: $f(x, y) = (x - 1)^2 + (y - 2)^2 + 3$.
+2.  Usa la funzione `optim` di R per trovare i valori di $x$ e $y$ che minimizzano $f(x, y)$.
+
+``` r
+# Definisci la funzione in due variabili
+f <- function(par) {
+  x <- par[1]
+  y <- par[2]
+  (x - 1)^2 + (y - 2)^2 + 3
+}
+
+# Usa optim per trovare il minimo
+result <- optim(c(0, 0), f)
+
+# Stampa il risultato
+cat("Il minimo si trova a (x, y) =", result$par, "con valore f(x, y) =", result$value, "\n")
+```
+
+### Esercizio 3: Ottimizzazione Con Vincoli (Livello Avanzato)
+
+Scrivi una funzione in due variabili con vincoli e usa l'ottimizzazione numerica per trovare il minimo.
+
+1.  Definisci la seguente funzione: $f(x, y) = (x - 1)^2 + (y - 2)^2 + 3$.
+2.  Imposta i vincoli: $x + y \leq 3$ e $x, y \geq 0$.
+3.  Usa la funzione `constrOptim` di R per trovare i valori di $x$ e $y$ che minimizzano $f(x, y)$ rispettando i vincoli.
+
+```{r}
+# Definisci la funzione in due variabili
+f <- function(par) {
+  x <- par[1]
+  y <- par[2]
+  (x - 1)^2 + (y - 2)^2 + 3
+}
+
+# Definisci i vincoli
+ui <- matrix(c(1, 1, -1, 0, 0, -1), nrow = 3, byrow = TRUE)
+ci <- c(3, 0, 0)
+
+# Usa constrOptim per trovare il minimo
+result <- constrOptim(c(0, 0), f, grad = NULL, ui = ui, ci = ci)
+
+# Stampa il risultato
+cat("Il minimo si trova a (x, y) =", result$par, "con valore f(x, y) =", result$value, "\n")
+```
+
+### Esercizio 4: Ottimizzazione di una Funzione Non Lineare (Livello Avanzato)
+
+Scrivi e ottimizza una funzione non lineare utilizzando l'algoritmo di Nelder-Mead.
+
+1.  Definisci la seguente funzione: $f(x, y) = \sin(x) \cdot \cos(y)$.
+2.  Usa la funzione `optim` con il metodo "Nelder-Mead" per trovare i valori di $x$ e $y$ che minimizzano $f(x, y)$.
+
+``` r
+# Definisci la funzione non lineare
+f <- function(par) {
+  x <- par[1]
+  y <- par[2]
+  sin(x) * cos(y)
+}
+
+# Usa optim con il metodo Nelder-Mead per trovare il minimo
+result <- optim(c(1, 1), f, method = "Nelder-Mead")
+
+# Stampa il risultato
+cat("Il minimo si trova a (x, y) =", result$par, "con valore f(x, y) =", result$value, "\n")
+```
+
+# stra avanzati:
+
+### Esercizio 1: Ottimizzazione Monte Carlo (Livello Intermedio)
+
+Utilizza il metodo Monte Carlo per ottimizzare una funzione.
+
+1.  Definisci la seguente funzione: $f(x) = \sin(x) + \cos(2x)$.
+2.  Usa il metodo Monte Carlo per trovare un valore di $x$ che minimizza $f(x)$.
+
+``` r
+# Definisci la funzione
+f <- function(x) {
+  sin(x) + cos(2 * x)
+}
+
+# Imposta i parametri per la simulazione Monte Carlo
+set.seed(123)  # Per riproducibilità
+n <- 10000  # Numero di simulazioni
+x_vals <- runif(n, min = -pi, max = pi)  # Genera n valori di x uniformemente distribuiti tra -pi e pi
+f_vals <- sapply(x_vals, f)  # Calcola f(x) per ogni x
+
+# Trova il minimo
+min_index <- which.min(f_vals)
+min_x <- x_vals[min_index]
+min_f <- f_vals[min_index]
+
+# Stampa il risultato
+cat("Il minimo si trova a x =", min_x, "con valore f(x) =", min_f, "\n")
+```
+
+### Esercizio 2: Ottimizzazione di una Funzione Multi-Variabile con Ricerca Esauriente (Livello Intermedio)
+
+Utilizza una ricerca esauriente per ottimizzare una funzione in due variabili.
+
+1.  Definisci la seguente funzione: $f(x, y) = (x - 1)^2 + (y - 2)^2 + 3$.
+2.  Usa un ciclo `for` per trovare i valori di $x$ e $y$ che minimizzano $f(x, y)$.
+
+``` r
+# Definisci la funzione in due variabili
+f <- function(x, y) {
+  (x - 1)^2 + (y - 2)^2 + 3
+}
+
+# Imposta i parametri per la ricerca esauriente
+x_range <- seq(-10, 10, by = 0.1)
+y_range <- seq(-10, 10, by = 0.1)
+min_f <- Inf
+min_x <- NA
+min_y <- NA
+
+# Usa un ciclo for per trovare il minimo
+for (x in x_range) {
+  for (y in y_range) {
+    current_f <- f(x, y)
+    if (current_f < min_f) {
+      min_f <- current_f
+      min_x <- x
+      min_y <- y
+    }
+  }
+}
+
+# Stampa il risultato
+cat("Il minimo si trova a (x, y) =", c(min_x, min_y), "con valore f(x, y) =", min_f, "\n")
+```
+
+### Esercizio 3: Ottimizzazione con Simulated Annealing (Livello Avanzato)
+
+Ottimizza una funzione utilizzando il metodo di Simulated Annealing.
+
+1.  Definisci la seguente funzione: $f(x, y) = \exp(x^2 + y^2)$.
+2.  Usa il metodo di Simulated Annealing per trovare i valori di $x$ e $y$ che minimizzano $f(x, y)$.
+
+``` r
+# Carica il pacchetto per il Simulated Annealing
+install.packages("GenSA")
+library(GenSA)
+
+# Definisci la funzione in due variabili
+f <- function(par) {
+  x <- par[1]
+  y <- par[2]
+  exp(x^2 + y^2)
+}
+
+# Imposta i limiti per le variabili
+lower <- c(-10, -10)
+upper <- c(10, 10)
+
+# Usa GenSA per trovare il minimo
+result <- GenSA(par = c(0, 0), fn = f, lower = lower, upper = upper)
+
+# Stampa il risultato
+cat("Il minimo si trova a (x, y) =", result$par, "con valore f(x, y) =", result$value, "\n")
+```
+
+### Esercizio 4: Ottimizzazione di una Funzione con Ricerca a Griglia (Livello Avanzato)
+
+Utilizza una ricerca a griglia per ottimizzare una funzione in due variabili.
+
+1.  Definisci la seguente funzione: $f(x, y) = \sin(x) \cdot \cos(y)$.
+2.  Usa un ciclo `for` per implementare una ricerca a griglia e trovare i valori di $x$ e $y$ che minimizzano $f(x, y)$.
+
+``` r
+# Definisci la funzione in due variabili
+f <- function(x, y) {
+  sin(x) * cos(y)
+}
+
+# Imposta i parametri per la ricerca a griglia
+x_range <- seq(-pi, pi, by = 0.1)
+y_range <- seq(-pi, pi, by = 0.1)
+min_f <- Inf
+min_x <- NA
+min_y <- NA
+
+# Usa un ciclo for per implementare la ricerca a griglia
+for (x in x_range) {
+  for (y in y_range) {
+    current_f <- f(x, y)
+    if (current_f < min_f) {
+      min_f <- current_f
+      min_x <- x
+      min_y <- y
+    }
+  }
+}
+
+# Stampa il risultato
+cat("Il minimo si trova a (x, y) =", c(min_x, min_y), "con valore f(x, y) =", min_f, "\n")
+```

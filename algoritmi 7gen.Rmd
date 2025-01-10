@@ -1,0 +1,279 @@
+---
+title: "algoritmi 7gen"
+output: html_document
+---
+
+### Esercizio 1: Ricerca Binaria
+
+**Consegna:** Scrivi una funzione `binary_search` che implementa l'algoritmo di ricerca binaria su un vettore ordinato. La funzione deve prendere come input un vettore ordinato e un valore target, e restituire l'indice del valore target nel vettore o -1 se il valore non è presente.
+
+**Soluzione:**
+
+``` r
+binary_search <- function(arr, target) {
+  left <- 1
+  right <- length(arr)
+  
+  while (left <= right) {
+    mid <- floor((left + right) / 2)
+    
+    if (arr[mid] == target) {
+      return(mid)
+    } else if (arr[mid] < target) {
+      left <- mid + 1
+    } else {
+      right <- mid - 1
+    }
+  }
+  
+  return(-1)
+}
+
+# Esempio di utilizzo:
+arr <- c(2, 3, 4, 10, 40)
+target <- 10
+result <- binary_search(arr, target)
+print(result) # Dovrebbe stampare 4
+```
+
+### Esercizio 2: Ricorsione - Calcolo del Fattoriale
+
+**Consegna:** Scrivi una funzione `factorial` che calcola il fattoriale di un numero intero positivo usando la ricorsione.
+
+**Soluzione:**
+
+``` r
+factorial <- function(n) {
+  if (n == 0) {
+    return(1)
+  } else {
+    return(n * factorial(n - 1))
+  }
+}
+
+# Esempio di utilizzo:
+result <- factorial(5)
+print(result) # Dovrebbe stampare 120
+```
+
+### Esercizio 3: Algoritmo di Euclide per il Massimo Comun Divisore
+
+**Consegna:** Scrivi una funzione `gcd` che implementa l'algoritmo di Euclide per trovare il massimo comun divisore di due numeri interi.
+
+**Soluzione:**
+
+``` r
+gcd <- function(a, b) {
+  while (b != 0) {
+    temp <- b
+    b <- a %% b
+    a <- temp
+  }
+  return(a)
+}
+
+# Esempio di utilizzo:
+result <- gcd(48, 18)
+print(result) # Dovrebbe stampare 6
+```
+
+### Esercizio 4: Ricorsione - Sequenza di Fibonacci
+
+**Consegna:** Scrivi una funzione `fibonacci` che calcola l'n-esimo numero della sequenza di Fibonacci usando la ricorsione.
+
+**Soluzione:**
+
+``` r
+fibonacci <- function(n) {
+  if (n <= 1) {
+    return(n)
+  } else {
+    return(fibonacci(n - 1) + fibonacci(n - 2))
+  }
+}
+
+# Esempio di utilizzo:
+result <- fibonacci(10)
+print(result) # Dovrebbe stampare 55
+```
+
+### Esercizio 5: Algoritmo di Ordinamento - Bubble Sort
+
+**Consegna:** Scrivi una funzione `bubble_sort` che implementa l'algoritmo di ordinamento a bolla per ordinare un vettore di numeri.
+
+**Soluzione:**
+
+``` r
+bubble_sort <- function(arr) {
+  n <- length(arr)
+  for (i in 1:(n-1)) {
+    for (j in 1:(n-i)) {
+      if (arr[j] > arr[j+1]) {
+        temp <- arr[j]
+        arr[j] <- arr[j+1]
+        arr[j+1] <- temp
+      }
+    }
+  }
+  return(arr)
+}
+
+# Esempio di utilizzo:
+arr <- c(64, 34, 25, 12, 22, 11, 90)
+sorted_arr <- bubble_sort(arr)
+print(sorted_arr) # Dovrebbe stampare il vettore ordinato
+```
+
+### Esercizio 6: Ottimizzazione - Metodo di Newton-Raphson
+
+**Consegna:** Scrivi una funzione `newton_raphson` che implementa il metodo di Newton-Raphson per trovare la radice di una funzione.
+
+**Soluzione:**
+
+``` r
+newton_raphson <- function(f, f_prime, x0, tol = 1e-7, max_iter = 1000) {
+  x <- x0
+  for (i in 1:max_iter) {
+    x_new <- x - f(x) / f_prime(x)
+    if (abs(x_new - x) < tol) {
+      return(x_new)
+    }
+    x <- x_new
+  }
+  return(NA) # Se non converge
+}
+
+# Esempio di utilizzo per la funzione f(x) = x^2 - 2 (radice quadrata di 2):
+f <- function(x) { x^2 - 2 }
+f_prime <- function(x) { 2 * x }
+x0 <- 1
+root <- newton_raphson(f, f_prime, x0)
+print(root) # Dovrebbe stampare un'approssimazione di sqrt(2)
+```
+
+### Esercizio 7: Algoritmo di Dijkstra per il Percorso più Breve
+
+**Consegna:** Scrivi una funzione `dijkstra` che implementa l'algoritmo di Dijkstra per trovare il percorso più breve in un grafo rappresentato da una matrice di adiacenza.
+
+**Soluzione:**
+
+``` r
+dijkstra <- function(graph, start) {
+  n <- nrow(graph)
+  dist <- rep(Inf, n)
+  dist[start] <- 0
+  visited <- rep(FALSE, n)
+  
+  for (i in 1:n) {
+    u <- which.min(ifelse(visited, Inf, dist))
+    visited[u] <- TRUE
+    
+    for (v in 1:n) {
+      if (graph[u, v] != 0 && !visited[v] && dist[u] + graph[u, v] < dist[v]) {
+        dist[v] <- dist[u] + graph[u, v]
+      }
+    }
+  }
+  
+  return(dist)
+}
+
+# Esempio di utilizzo:
+graph <- matrix(c(0, 10, 0, 30, 100,
+                  10, 0, 50, 0, 0,
+                  0, 50, 0, 20, 10,
+                  30, 0, 20, 0, 60,
+                  100, 0, 10, 60, 0), nrow = 5, byrow = TRUE)
+start_node <- 1
+distances <- dijkstra(graph, start_node)
+print(distances) # Dovrebbe stampare le distanze minime dal nodo di partenza
+```
+
+### Esercizio 8: Algoritmo di Ordinamento - Quick Sort
+
+**Consegna:** Scrivi una funzione `quick_sort` che implementa l'algoritmo di ordinamento rapido (quick sort) per ordinare un vettore di numeri.
+
+**Soluzione:**
+
+``` r
+quick_sort <- function(arr) {
+  if (length(arr) <= 1) {
+    return(arr)
+  }
+  pivot <- arr[1]
+  less <- arr[arr < pivot]
+  equal <- arr[arr == pivot]
+  greater <- arr[arr > pivot]
+  return(c(quick_sort(less), equal, quick_sort(greater)))
+}
+
+# Esempio di utilizzo:
+arr <- c(34, 7, 23, 32, 5, 62)
+sorted_arr <- quick_sort(arr)
+print(sorted_arr) # Dovrebbe stampare il vettore ordinato
+```
+
+### Esercizio 9: Ottimizzazione - Metodo del Gradiente
+
+**Consegna:** Scrivi una funzione `gradient_descent` che implementa il metodo del gradiente per trovare il minimo di una funzione.
+
+**Soluzione:**
+
+``` r
+gradient_descent <- function(f, f_prime, x0, lr = 0.01, tol = 1e-7, max_iter = 1000) {
+  x <- x0
+  for (i in 1:max_iter) {
+    grad <- f_prime(x)
+    x_new <- x - lr * grad
+    if (sqrt(sum((x_new - x)^2)) < tol) {
+      return(x_new)
+    }
+    x <- x_new
+  }
+  return(x) # Se non converge
+}
+
+# Esempio di utilizzo per la funzione f(x) = (x-2)^2:
+f <- function(x) { (x - 2)^2 }
+f_prime <- function(x) { 2 * (x - 2) }
+x0 <- 0
+min_point <- gradient_descent(f, f_prime, x0)
+print(min_point) # Dovrebbe stampare un'approssimazione di 2
+```
+
+### Esercizio 10: Algoritmo di Ordinamento - Merge Sort
+
+**Consegna:** Scrivi una funzione `merge_sort` che implementa l'algoritmo di ordinamento per fusione (merge sort) per ordinare un vettore di numeri.
+
+**Soluzione:**
+
+``` r
+merge_sort <- function(arr) {
+  if (length(arr) <= 1) {
+    return(arr)
+  }
+  mid <- floor(length(arr) / 2)
+  left <- merge_sort(arr[1:mid])
+  right <- merge_sort(arr[(mid+1):length(arr)])
+  return(merge(left, right))
+}
+
+merge <- function(left, right) {
+  result <- c()
+  while (length(left) > 0 && length(right) > 0) {
+    if (left[1] <= right[1]) {
+      result <- c(result, left[1])
+      left <- left[-1]
+    } else {
+      result <- c(result, right[1])
+      right <- right[-1]
+    }
+  }
+  return(c(result, left, right))
+}
+
+# Esempio di utilizzo:
+arr <- c(38, 27, 43, 3, 9, 82, 10)
+sorted_arr <- merge_sort(arr)
+print(sorted_arr) # Dovrebbe stampare il vettore ordinato
+```

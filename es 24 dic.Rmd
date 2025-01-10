@@ -1,0 +1,186 @@
+# Generare un dataframe di random walks in R:
+
+```{r}
+
+# Funzione per generare un singolo random walk di lunghezza L
+genera_random_walk <- function(L) {
+  # Vettore per memorizzare il random walk
+  random_walk <- numeric(L)
+  
+  # Inizializza il primo elemento del random walk
+  random_walk[1] <- rnorm(1)
+  
+  # Ciclo for per generare il random walk
+  for (i in 2:L) {
+    # Genera un valore casuale
+    passo <- rnorm(1)
+    
+    # Calcola il nuovo elemento del random walk
+    random_walk[i] <- random_walk[i - 1] + passo
+  }
+  
+  # Ritorna il random walk generato
+  return(random_walk)
+}
+
+# Funzione per generare N random walk, ognuno di lunghezza L e salvarli in un data frame
+genera_N_random_walk <- function(N, L) {
+  # Data frame per memorizzare tutti i random walk
+  random_walks <- data.frame(matrix(ncol = N, nrow = L))
+  
+  # Ciclo for per generare N random walk
+  for (j in 1:N) {
+    # Genera un singolo random walk usando la funzione definita prima
+    random_walks[, j] <- genera_random_walk(L)
+  }
+  
+  # Rinomina le colonne del data frame
+  colnames(random_walks) <- paste0("Walk_", 1:N)
+  
+  # Ritorna il data frame contenente tutti i random walk
+  return(random_walks)
+}
+
+# Esempio di utilizzo della funzione
+N <- 5  # Numero di random walk
+L <- 100 # Lunghezza di ciascun random walk
+random_walks <- genera_N_random_walk(N, L)
+
+# Visualizza le prime righe del data frame
+head(random_walks)
+
+# Plotta i random walk utilizzando le funzioni base di R
+# Plotta il primo random walk per creare il grafico iniziale
+plot(1:L, random_walks[, 1], type = "l", col = 1, ylim = range(random_walks),
+     xlab = "Time", ylab = "Value", main = "Random Walks")
+
+# Aggiungi i rimanenti random walk al grafico
+for (i in 2:N) {
+  lines(1:L, random_walks[, i], col = i)
+}
+
+```
+
+# La media mobile in R:
+
+### Esempio di Codice
+
+Ecco il codice per calcolare la media mobile di un vettore con una finestra di dimensione fissa:
+
+```{r}
+# Funzione per calcolare la media mobile
+calcola_media_mobile <- function(vettore, finestra) {
+  # Calcola la lunghezza del vettore
+  n <- length(vettore)
+  
+  # Crea un vettore vuoto per memorizzare le medie mobili
+  medie_mobili <- numeric(n - finestra + 1)
+  
+  # Ciclo for per calcolare la media mobile
+  for (i in 1:(n - finestra + 1)) {
+    # Calcola la somma degli elementi nella finestra corrente
+    somma_finestra <- sum(vettore[i:(i + finestra - 1)])
+    
+    # Calcola la media della finestra corrente
+    media_finestra <- somma_finestra / finestra
+    
+    # Memorizza la media calcolata nel vettore delle medie mobili
+    medie_mobili[i] <- media_finestra
+  }
+  
+  # Ritorna il vettore delle medie mobili
+  return(medie_mobili)
+}
+
+# Esempio di utilizzo della funzione
+vettore <- c(10, 20, 30, 40, 50, 60, 70, 80, 90, 100)
+finestra <- 3
+risultato <- calcola_media_mobile(vettore, finestra)
+
+# Stampa il risultato
+print(risultato)
+```
+
+### Spiegazione Dettagliata del Ciclo `for`
+
+1.  **Calcolo della Lunghezza del Vettore**
+
+    ``` r
+    n <- length(vettore)
+    ```
+
+    -   Qui, calcoliamo la lunghezza del vettore `vettore`. Ad esempio, se `vettore` è `c(10, 20, 30, 40, 50, 60, 70, 80, 90, 100)`, `n` sarà 10.
+
+2.  **Creazione del Vettore delle Medie Mobili**
+
+    ``` r
+    medie_mobili <- numeric(n - finestra + 1)
+    ```
+
+    -   Creiamo un vettore vuoto `medie_mobili` per memorizzare le medie mobili. La lunghezza del vettore è `n - finestra + 1`. Questo perché calcoliamo la media mobile su finestre che si muovono lungo il vettore originale e ogni finestra ha `finestra` elementi. Nel nostro esempio, con una finestra di dimensione 3, la lunghezza sarà `10 - 3 + 1 = 8`.
+
+3.  **Configurazione del Ciclo `for`**
+
+    ``` r
+    for (i in 1:(n - finestra + 1)) {
+    ```
+
+    -   Il ciclo `for` itera da 1 a `n - finestra + 1`. Questo significa che il ciclo eseguirà esattamente 8 iterazioni nel nostro esempio.
+
+4.  **Somma degli Elementi nella Finestra Corrente**
+
+    ``` r
+    somma_finestra <- sum(vettore[i:(i + finestra - 1)])
+    ```
+
+    -   In ogni iterazione del ciclo, calcoliamo la somma degli elementi nella finestra corrente. La finestra corrente è determinata dagli indici `i` a `i + finestra - 1`. Ad esempio, nella prima iterazione (`i = 1`), la finestra è `vettore[1:3]`, ovvero gli elementi `10, 20, 30`.
+
+5.  **Calcolo della Media della Finestra Corrente**
+
+    ``` r
+    media_finestra <- somma_finestra / finestra
+    ```
+
+    -   Calcoliamo la media della finestra corrente dividendo la somma degli elementi della finestra per la dimensione della finestra. Ad esempio, nella prima iterazione, la somma è `10 + 20 + 30 = 60` e la media è `60 / 3 = 20`.
+
+6.  **Memorizzazione della Media Calcolata**
+
+    ``` r
+    medie_mobili[i] <- media_finestra
+    ```
+
+    -   Memorizziamo la media calcolata nel vettore `medie_mobili` alla posizione `i`. Ad esempio, nella prima iterazione, `medie_mobili[1]` sarà `20`.
+
+7.  **Fine del Ciclo `for`**
+
+    -   Il ciclo continua fino a quando tutte le finestre possibili sono state calcolate. Al termine, il vettore `medie_mobili` contiene tutte le medie mobili calcolate.
+
+### Esempio di Calcolo
+
+Supponiamo di avere il vettore `vettore <- c(10, 20, 30, 40, 50, 60, 70, 80, 90, 100)` e una finestra di dimensione 3. Ecco come funziona il calcolo passo passo:
+
+1.  **Prima Iterazione `(i = 1)`**:
+    -   Finestra: `10, 20, 30`
+    -   Somma: `10 + 20 + 30 = 60`
+    -   Media: `60 / 3 = 20`
+    -   `medie_mobili[1] <- 20`
+2.  **Seconda Iterazione `(i = 2)`**:
+    -   Finestra: `20, 30, 40`
+    -   Somma: `20 + 30 + 40 = 90`
+    -   Media: `90 / 3 = 30`
+    -   `medie_mobili[2] <- 30`
+3.  **Terza Iterazione `(i = 3)`**:
+    -   Finestra: `30, 40, 50`
+    -   Somma: `30 + 40 + 50 = 120`
+    -   Media: `120 / 3 = 40`
+    -   `medie_mobili[3] <- 40`
+
+... e così via fino all'ottava iterazione.
+
+### Risultato Finale
+
+Il vettore delle medie mobili sarà:
+
+``` r
+[1] 20 30 40 50 60 70 80 90
+```

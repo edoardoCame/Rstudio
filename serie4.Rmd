@@ -1,0 +1,69 @@
+---
+title: "serie4"
+output: html_document
+---
+
+![](images/Screenshot%202024-12-28%20alle%2018.54.33.png)
+
+```{r}
+
+#create a fibonacci function
+fibonacci <- function(n){
+  vec <- numeric(n)
+  vec[1] <- 1
+  vec[2] <- 1
+  for(i in 3:n){
+    vec[i] <- vec[i-1] + vec[i-2]
+  }
+  return(vec)
+}
+
+fibonacci(10)
+```
+
+![](images/Screenshot%202024-12-28%20alle%2019.03.12.png)
+
+```{r}
+
+puntoA <- function(N){
+  contatore <- 0
+  for(i in 1:N){
+    contatore <- contatore + i^2
+  }
+  print(contatore)
+}
+
+puntoA(0)
+```
+
+```{r}
+
+
+
+```
+
+```{r}
+sieve_of_eratosthenes <- function(N) {
+  # Create a logical vector of TRUE values with length N+1 (indexing from 0 to N)
+  primes <- rep(TRUE, N + 1)
+  primes[1] <- FALSE  # 1 is not a prime number
+  
+  # Start with the first prime number, which is 2
+  for (i in 2:N) {
+    if (primes[i]) {
+      # Mark all multiples of i as FALSE
+      for (j in seq(from = i * 2, to = N, by = i)) {
+        primes[j] <- FALSE
+      }
+    }
+  }
+  
+  # Return the indices of the TRUE values, which are the prime numbers
+  return(which(primes))
+}
+
+# Example usage:
+N <- 30
+prime_numbers <- sieve_of_eratosthenes(N)
+print(prime_numbers)
+```
