@@ -1,0 +1,173 @@
+---
+title: "Lezione 3: Funzioni Definite dall'Utente"
+output: html_document
+---
+
+# Obiettivi
+
+- Comprendere come definire e documentare funzioni in R
+- Esempi pratici di funzioni con argomenti, valori di default e gestione degli errori
+- Uso di funzioni anonime e `...`
+
+## 1. Definizione di funzioni base
+
+```{r}
+# Sintassi di base
+generale <- function(x) {
+  # corpo della funzione
+  x * 2
+}
+
+# Chiamata
+generale(5)  # 10
+```
+
+### 1.1 Argomenti e valori di default
+
+```{r}
+somma <- function(a, b = 1) {
+  a + b
+}
+
+somma(5)     # 6
+somma(5, 3)  # 8
+```
+
+### 1.2 Argomenti variabili con `...`
+
+```{r}
+concatena <- function(..., sep = " ") {
+  paste(..., sep = sep)
+}
+concatena("Ciao", "R", sep = "-")  # "Ciao-R"
+```
+
+## 2. Restituzione di più valori
+
+In R possiamo restituire liste o vettori:
+
+```{r}
+statistiche <- function(v) {
+  list(
+    media = mean(v),
+    mediana = median(v),
+    dev_std = sd(v)
+  )
+}
+r <- statistiche(c(1,2,3,4,5))
+r$media
+```
+
+## 3. Documentare le funzioni con roxygen2
+
+```{r eval=FALSE}
+#' Calcola l'area di un cerchio
+#'
+#' @param r Raggio
+#' @return Area
+#' @examples
+#' area_cerchio(3)
+area_cerchio <- function(r) {
+  pi * r^2
+}
+```
+
+## 4. Esempi interattivi
+
+```{r}
+# Esempio: funzione per scalare vettori
+scala <- function(v, minn = min(v), maxx = max(v)) {
+  (v - minn) / (maxx - minn)
+}
+v <- c(10, 20, 30)
+scala(v)
+```
+
+### 4.1 Esercizio 1
+- Definire una funzione `media_pesata(v, w)` che calcola la media pesata.
+
+### 4.2 Esercizio 2
+- Definire `safe_log(x)`: restituisce `log(x)` se `x > 0`, altrimenti `NA`.
+
+## 5. Funzioni anonime e purrr
+
+```{r}
+library(purrr)
+# mappa con funzione anonima
+map_dbl(list(1,2,3,4), function(x) x^2)
+# con sintassi semplificata
+map_dbl(1:4, ~ .x^2)
+```
+
+## 6. Capturing arguments
+
+```{r}
+defaults <- function(a = 1, b = 2) list(a = a, b = b)
+formals(defaults)
+```
+
+---
+
+---
+Nella prossima lezione vedremo i cicli `for` e `while`.
+
+## Esercizi (Lezione 3)
+1. Definisci una funzione `square(x)` che restituisca il quadrato di `x` e provala con diversi valori.
+2. Scrivi `add(a, b=5)` con parametro default e verifica l’output per diverse chiamate.
+3. Implementa `concat(...)` che unisca stringhe con un separatore, usando `...` e `paste()`.
+4. Crea una funzione `stats(v)` che restituisca lista con media, mediana e devi standard di un vettore `v`.
+5. Documenta la funzione `area_cerchio(r)` con commenti roxygen2, includendo parametri e esempi.
+6. Usa `map_dbl()` da purrr per applicare la funzione `square` a `1:10`.
+7. Scrivi `safe_log(x)` che restituisca `log(x)` solo se `x>0`, altrimenti `NA`.
+8. Definisci `capture_args(f)` che ritorni i nomi e valori di default di una funzione `f` usando `formals()`.
+9. Crea una funzione `compose(f, g)` che restituisca una nuova funzione h(x)=f(g(x)), testandola con funzioni semplici.
+10. Costruisci una funzione `memoize(f)` che memorizzi i risultati di `f` in una cache interna e la applichi a una funzione ricorsiva.
+---
+## Soluzioni (Lezione 3)
+```{r}
+# 1. Funzione square
+square <- function(x) x^2
+square(5)
+# 2. Funzione add con default
+add <- function(a, b = 5) a + b
+add(3); add(3, 2)
+# 3. Funzione concat con ...
+concat <- function(..., sep = " ") paste(..., sep = sep)
+concat("Ciao", "R", sep = "-")
+# 4. Funzione stats
+stats <- function(v) list(media = mean(v), mediana = median(v), sd = sd(v))
+stats(c(1,2,3,4,5))
+# 5. Documentazione roxygen2 per area_cerchio
+#' Calcola l'area di un cerchio
+#' @param r Raggio
+#' @return Area
+#' @examples
+#' area_cerchio(2)
+area_cerchio <- function(r) pi * r^2
+# 6. Esempio map_dbl
+library(purrr)
+map_dbl(1:10, square)
+# 7. Funzione safe_log
+safe_log <- function(x) ifelse(x > 0, log(x), NA)
+safe_log(c(-1, 1, 10))
+# 8. Funzione capture_args
+capture_args <- function(f) formals(f)
+capture_args(sum)
+# 9. Funzione compose
+compose <- function(f, g) function(x) f(g(x))
+h <- compose(square, sqrt)
+h(16)
+# 10. Funzione memoize
+memoize <- function(f) {
+  cache <- list()
+  function(x) {
+    key <- as.character(x)
+    if (!is.null(cache[[key]])) return(cache[[key]])
+    val <- f(x)
+    cache[[key]] <<- val
+    val
+  }
+}
+fib_memo <- memoize(fib)
+fib_memo(10)
+```

@@ -1,0 +1,228 @@
+---
+title: "Lezione 2: Liste, Array e Data Frame"
+output: html_document
+---
+
+# Obiettivi
+
+- Imparare a creare e manipolare liste, array e data frame in R
+- Capire come accedere, modificare e iterare su questi oggetti
+
+## 1. Liste
+
+Le liste (`list`) sono collezioni eterogenee di oggetti.
+
+### 1.1 Creazione di una lista
+
+```{r}
+# Lista di elementi diversi
+mia_lista <- list(
+  numeri = 1:5,
+  caratteri = c("a", "b", "c"),
+  logico = TRUE,
+  sottolista = list(a = 10, b = 20)
+)
+str(mia_lista)
+```
+
+### 1.2 Accesso agli elementi
+
+```{r}
+# Con [[ ]] per elemento
+mia_lista[["numeri"]]
+mia_lista$caratteri
+
+# Elementi annidati
+mia_lista$sottolista$b
+```
+
+### 1.3 Modifica e aggiunta
+
+```{r}
+# Aggiungere un elemento
+mia_lista$nuovo <- pi
+
+# Modificare
+mia_lista$logico <- FALSE
+
+str(mia_lista)
+```
+
+### 1.4 Operazioni comuni
+
+```{r}
+library(purrr) # opzioni avanzate con purrr
+# Map: applica una funzione a ogni elemento
+map(mia_lista, class)
+```
+
+**Esercizio 1**: creare una lista con:
+- vettore di 10 numeri casuali
+- vettore di caratteri di nomi
+- matrice 2x2
+ e accedere al secondo elemento del vettore di nomi.
+
+## 2. Array
+
+Un `array` è un vettore multidimensionale: tutte le entries devono essere dello stesso tipo.
+
+### 2.1 Creazione
+
+```{r}
+# Array 3x4 riempito da 1 a 12
+mio_array <- array(1:12, dim = c(3, 4))
+print(mio_array)
+```
+
+### 2.2 Dimensioni e nomi
+
+```{r}
+dim(mio_array)
+# Aggiungere nomi
+dimnames(mio_array) <- list(
+  righe = paste0("R", 1:3),
+  colonne = paste0("C", 1:4)
+)
+print(mio_array)
+```
+
+### 2.3 Accesso e slicing
+
+```{r}
+# Estrai riga 2
+mio_array[2, ]
+# Estrai colonna 3
+mio_array[, 3]
+# Estrai sottogruppo 2x2
+mio_array[1:2, 3:4]
+```
+
+### 2.4 Operazioni aritmetiche
+
+```{r}
+mio_array * 2
+colSums(mio_array)
+```
+
+**Esercizio 2**: creare un array 4x3 di numeri casuali (da 1 a 100), assegnare nomi a righe e colonne, e calcolare la somma di ciascuna riga.
+
+## 3. Data Frame
+
+Il `data.frame` è la struttura tabellare di base in R.
+
+### 3.1 Creazione di un data frame
+
+```{r}
+df <- data.frame(
+  id = 1:5,
+  nome = c("Alice", "Bruno", "Carla", "Davide", "Elisa"),
+  punteggio = c(10.5, 8.7, 9.3, 7.8, 10.0),
+  stringsAsFactors = FALSE
+)
+str(df)
+head(df)
+```
+
+### 3.2 Selezione di righe e colonne
+
+```{r}
+# Colonna
+df$nome
+# Riga
+df[3, ]
+# Sottoselezione
+df[df$punteggio > 9, c("id", "nome")]
+```
+
+### 3.3 Aggiungere ed eliminare colonne
+
+```{r}
+# Aggiungere
+df$passed <- df$punteggio >= 9
+# Eliminare
+df$passed <- NULL
+```
+
+### 3.4 Ordinamento e riordinamento
+
+```{r}
+# Ordina per punteggio decrescente
+df_ordinato <- df[order(df$punteggio, decreasing = TRUE), ]
+```
+
+### 3.5 Operazioni con dplyr (introduzione)
+
+```{r}
+library(dplyr)
+df %>%
+  filter(punteggio > 9) %>%
+  select(id, nome)
+```
+
+**Esercizio 3**: creare un data frame con informazioni su prodotti (codice, prezzo, categoria), quindi filtrare i prodotti con prezzo > X e ordinare per categoria.
+
+---
+
+## Esercizi (Lezione 2)
+1. Crea una lista `l1` contenente un vettore di numeri 1:5, un vettore di caratteri con i giorni della settimana e un valore logico FALSE.
+2. Estrai il terzo elemento del vettore di caratteri nella lista `l1` usando `$` e `[[ ]]`.
+3. Aggiungi alla lista `l1` una sottolista con due elementi numerici e verifica la struttura con `str()`.
+4. Crea un array 2x3 con i numeri da 10 a 15, assegna nomi alle righe e colonne e stampa la somma di ogni colonna.
+5. Trasforma l'array creato nell'esercizio precedente in un `data.frame` e aggiungi una colonna ID con valori da 1 a 2.
+6. Genera un `data.frame` con 4 righe e 3 colonne di numeri casuali (da 1 a 50), filtra le righe con somma dei valori > 60 e ordina per la somma in ordine crescente.
+7. Utilizza `dplyr` per raggruppare il `data.frame` per una colonna di categoria, calcolando la media di un'altra colonna.
+8. Scrivi una funzione `to_matrix(df)` che, dato un `data.frame` numerico, restituisca un `matrix` con gli stessi valori.
+9. Combina due data frame con 3 righe ciascuno usando `rbind()` e gestisci eventuali colonne mancanti.
+10. Implementa una funzione `summarize_df(df)` che restituisca media, mediana e deviazione standard per ogni colonna numerica di un `data.frame`.
+---
+## Soluzioni (Lezione 2)
+```{r}
+# 1. Lista eterogenea
+l1 <- list(numeri = 1:5,
+           giorni = c("Lun","Mar","Mer","Gio","Ven","Sab","Dom"),
+           flag = FALSE)
+str(l1)
+# 2. Accesso al terzo giorno
+l1$giorni[3]
+l1[["giorni"]][3]
+# 3. Aggiunta sottolista
+l1$sotto <- list(num = 100, parole = c("a","b"))
+str(l1)
+# 4. Array 2x3 e somme colonne
+arr <- array(10:15, dim = c(2,3), dimnames = list(R=1:2, C=1:3))
+colSums(arr)
+# 5. Converti in data.frame e aggiungi ID
+df_arr <- as.data.frame(arr)
+df_arr$ID <- 1:2
+df_arr
+# 6. Data frame casuale e filtro
+set.seed(2)
+df6 <- as.data.frame(matrix(sample(1:50, 12, TRUE), nrow = 4))
+df6$sum <- rowSums(df6)
+df6[df6$sum > 60, ]
+# 7. Raggruppa con dplyr
+library(dplyr)
+df7 <- data.frame(cat = rep(c("X","Y"), each=2), val = c(5,3,7,2))
+df7 %>% group_by(cat) %>% summarize(mean_val = mean(val))
+# 8. Funzione to_matrix
+to_matrix <- function(df) as.matrix(df)
+to_matrix(df_arr[,1:3])
+# 9. rbind e bind_rows
+df9a <- data.frame(a=1:3, b=4:6)
+df9b <- data.frame(b=7:9, c=10:12)
+rbind(df9a, df9b)
+library(dplyr)
+bind_rows(df9a, df9b)
+# 10. summarize_df e applicazione
+summarize_df <- function(df) {
+  nums <- sapply(df, is.numeric)
+  out <- data.frame(
+    media = sapply(df[,nums], mean),
+    mediana = sapply(df[,nums], median),
+    sd = sapply(df[,nums], sd)
+  )
+  return(out)
+}
+dfs <- list(df_arr[,1:2], df6[,1:4], df7)
+do.call(rbind, lapply(dfs, summarize_df))
+```

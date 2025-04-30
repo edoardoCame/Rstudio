@@ -1,0 +1,204 @@
+---
+title: "Lezione 4: Cicli For e While"
+output: html_document
+---
+
+# Obiettivi
+
+- Comprendere la sintassi dei cicli `for` e `while` in R
+- Esempi pratici: iterazioni su vettori, liste e data frame
+- Gestione di `break` e `next`
+
+## 1. Il ciclo `for`
+
+Un ciclo `for` itera su un vettore (o su una sequenza).
+
+```{r}
+# Esempio base: stampe da 1 a 5
+for (i in 1:5) {
+  print(i)
+}
+```
+
+### 1.1 Iterare su un vettore
+
+```{r}
+v <- c("a", "b", "c")
+for (lettera in v) {
+  cat("Lettera:", lettera, "\n")
+}
+```
+
+### 1.2 Iterare su colonne di un data frame
+
+```{r}
+df <- data.frame(x = rnorm(5), y = runif(5))
+for (col in names(df)) {
+  media <- mean(df[[col]])
+  cat("Media di", col, "=", round(media, 2), "\n")
+}
+```
+
+### 1.3 `break` e `next`
+
+```{r}
+# break: esci dal ciclo
+for (i in 1:10) {
+  if (i == 5) {
+    cat("Raggiunto 5, esco!\n")
+    break
+  }
+  print(i)
+}
+
+# next: salta all'iterazione successiva
+for (i in 1:5) {
+  if (i %% 2 == 0) {
+    next  # salta i pari
+  }
+  print(i)
+}
+```
+
+**Esercizio 1**:
+Scrivi un `for` che calcola il quadrato di ogni numero da 1 a 20 e lo memorizza in un vettore.
+
+## 2. Il ciclo `while`
+
+Il ciclo `while` esegue le istruzioni fintanto che la condizione è vera.
+
+```{r}
+# Conta fino a 5
+i <- 1
+while (i <= 5) {
+  print(i)
+  i <- i + 1
+}
+```
+
+### 2.1 Uso pratico di `while`
+
+```{r}
+# Genera numeri casuali finché la somma non supera 50
+tot <- 0
+n <- 0
+while (tot < 50) {
+  val <- sample(1:10, 1)
+  tot <- tot + val
+  n <- n + 1
+  cat("Step", n, "valore", val, "somma", tot, "\n")
+}
+```
+
+### 2.2 Evitare loop infiniti
+
+```{r}
+# Attenzione: senza aggiornare la variabile, si rimane nel loop
+# i <- 1
+# while (i <= 5) {
+#   print(i)
+# }
+```
+
+**Esercizio 2**:
+Implementa un `while` che trova il primo numero di Fibonacci maggiore di 100.
+
+## 3. Confronto con funzioni vettoriali
+
+I loop sono chiari ma spesso meno efficienti di operazioni vettoriali.
+
+```{r}
+# Quadrato via for
+i <- 1:100000
+res1 <- numeric(length(i))
+for (k in seq_along(i)) {
+  res1[k] <- i[k]^2
+}
+
+# Quadrato vettoriale
+i2 <- 1:100000
+res2 <- i2^2
+
+# Verifica equivalenza e tempi
+identical(res1, res2)
+
+## Soluzioni (Lezione 4)
+```{r}
+# 1. Cubi da 1 a 10
+res1 <- sapply(1:10, function(x) x^3)
+res1
+# 2. Cubi saltando multipli di 3
+res2 <- c()
+for(i in 1:10) {
+  if(i %% 3 == 0) next
+  res2 <- c(res2, i^3)
+}
+res2
+# 3. Somma da 1 a 100 con while
+tot <- 1; i <- 2
+while(i <= 100) { tot <- tot + i; i <- i + 1 }
+tot
+# 4. Genera casuali fino a somma>200
+tot2 <- 0
+while(tot2 <= 200) { tot2 <- tot2 + sample(1:20,1) }
+tot2
+# 5. Somma righe data.frame
+df5 <- data.frame(a=1:5, b=6:10)
+for(r in seq_len(nrow(df5))) {
+  cat(sum(df5[r,]), "\n")
+}
+# 6. Primo Fibonacci>500
+i <- 1; val <- fib(1)
+while(val <= 500) { i <- i+1; val <- fib(i) }
+val
+# 7. Confronto tempi
+system.time(for(k in 1:1e6) x <- k^2)
+system.time(x2 <- (1:1e6)^2)
+# 8. For/while misti
+res8 <- list()
+for(j in 1:5) {
+  vals <- sample(1:100,10)
+  avg <- mean(vals)
+  iter <- 1
+  while(avg <= 50) {
+    vals <- sample(1:100,10)
+    avg <- mean(vals)
+    iter <- iter + 1
+  }
+  res8[[j]] <- list(media=avg, iter=iter)
+}
+res8
+# 9. loop_summary
+loop_summary <- function(df) {
+  sapply(df, function(col) c(mean=mean(col), sd=sd(col)))
+}
+loop_summary(df5)
+# 10. Simulazione annidata
+count_high <- function(n,seed) {
+  set.seed(seed)
+  vals <- runif(n)
+  mean(vals>0.5)
+}
+res10 <- matrix(nrow=1000,ncol=10)
+for(s in 1:10) {
+  for(k in 1:1000) res10[k,s] <- count_high(1000,s)
+}
+head(res10)
+```
+
+## Esercizi (Lezione 4)
+1. Scrivi un ciclo `for` che calcoli il cubo dei numeri da 1 a 10 e li memorizzi in un vettore.
+2. Modifica il ciclo precedente per saltare i numeri multipli di 3 usando `next`.
+3. Implementa un ciclo `while` che sommi i numeri da 1 a 100 e memorizza il risultato.
+4. Crea un `while` che generi numeri casuali fino a che la somma non supera 200.
+5. Costruisci un `for` che itera su un `data.frame` di 5 righe e 2 colonne, stampando la somma di ogni riga.
+6. Usa la funzione `fib()` per trovare il primo termine maggiore di 500, implementando un `while` dedicato.
+7. Confronta i tempi di esecuzione tra un ciclo `for` e un’operazione vettoriale per elevare al quadrato il vettore `1:1e6`.
+8. Combina un `for` e un `while`: per 5 serie di 10 numeri casuali, calcola la media finché non supera 50.
+9. Definisci una funzione `loop_summary(df)` che usi un `for` per calcolare media e dev.std di ogni colonna.
+10. Implementa una simulazione con doppio ciclo annidato per valutare la percentuale di valori > 0.5 in 1000 campioni.
+```
+
+---
+
+Nella prossima lezione costruiremo un esempio avanzato che utilizza funzioni, cicli e data frame insieme.

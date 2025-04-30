@@ -1,0 +1,215 @@
+---
+title: "Lezione 5: Progetto Avanzato di Analisi Dati in R"
+output: html_document
+---
+
+# Obiettivi
+
+- Integrare liste, array, data frame, funzioni utente e cicli in un workflow
+- Simulare un dataset, pulirlo, analizzarlo e visualizzarlo
+- Costruire un report interattivo e riutilizzabile
+
+## 1. Simulazione del dataset
+
+Nel nostro esempio genereremo dati di punteggi di studenti in diverse materie.
+Vogliamo simulare:
+- `n` studenti
+- `m` materie
+- punteggi tra 0 e 100
+
+```{r}
+set.seed(123)
+n <- 30    # numero di studenti
+m <- 5     # numero di materie
+materie <- c("Matematica", "Fisica", "Chimica", "Storia", "Inglese")
+
+# Genera punteggi in lista
+lista_punteggi <- lapply(1:m, function(i) sample(50:100, n, replace = TRUE))
+names(lista_punteggi) <- materie
+
+# Converti in data frame
+df_punteggi <- as.data.frame(lista_punteggi)
+df_punteggi$Studente <- paste0("S", sprintf("%02d", 1:n))
+# Riordina colonne
+df_punteggi <- df_punteggi[, c("Studente", materie)]
+head(df_punteggi)
+```
+
+**Spiegazione**: abbiamo creato una lista di vettori, poi convertito in `data.frame` e aggiunto la colonna `Studente`.
+
+## 2. Funzioni per il calcolo delle statistiche
+
+Definiamo funzioni per:
+- Media e mediana per studente
+- Voto finale (media pesata)
+
+```{r}
+# 2.1 Statistiche per riga
+describe_student <- function(riga) {
+  # Estrai i punteggi come vettore numerico, escludendo la colonna 'Studente'
+  cols <- setdiff(names(riga), "Studente")
+  punteggi <- as.numeric(unlist(riga[cols]))
+  list(
+    media = round(mean(punteggi), 1),
+    mediana = round(median(punteggi), 1)
+  )
+}
+
+# 2.2 Funzione per elaborare tutto il data frame
+# 2.2 Funzione per elaborare tutto il data frame
+summarize_class <- function(df, weights = NULL) {
+  # Definisce le colonne di punteggi
+  cols <- setdiff(names(df), "Studente")
+  # Peso uniforme se non fornito
+  if (is.null(weights)) weights <- rep(1, length(cols))
+  weights <- weights / sum(weights)
+  # Vettori di output
+  n <- nrow(df)
+  media <- numeric(n)
+  mediana <- numeric(n)
+  voto_finale <- numeric(n)
+  # Calcola per ogni studente
+  for (i in seq_len(n)) {
+    # Estrai i punteggi della riga come vettore numerico
+    valori <- as.numeric(unlist(df[i, cols]))
+    media[i] <- round(mean(valori), 1)
+    mediana[i] <- round(median(valori), 1)
+    voto_finale[i] <- round(sum(valori * weights), 1)
+  }
+  # Costruisce il data frame dei risultati
+  risultato_df <- data.frame(
+    Studente = df$Studente,
+    media = media,
+    mediana = mediana,
+    voto_finale = voto_finale,
+    stringsAsFactors = FALSE
+  )
+  return(risultato_df)
+}
+
+# Test della funzione
+summary_df <- summarize_class(df_punteggi)
+head(summary_df)
+```
+
+## 3. Uso di cicli per simulazioni multiple
+
+Eseguiamo simulazioni ripetute variando il seme per analizzare la variabilità.
+
+```{r}
+# Parametri
+tot_sim <- 50
+results_list <- vector("list", tot_sim)
+
+for (s in seq_len(tot_sim)) {
+  set.seed(100 + s)
+  # rigenera il data frame dei punteggi
+df_temp <- as.data.frame(lapply(lista_punteggi, function(v) sample(v, n, replace=TRUE)))
+df_temp$Studente <- df_punteggi$Studente
+  # sintetizza
+  results_list[[s]] <- summarize_class(df_temp)
+}
+
+# Array di voto finale: righe studenti, colonne simulazioni
+voti_mat <- sapply(results_list, function(x) x$voto_finale)
+dim(voti_mat)  # n x tot_sim
+```
+
+**Spiegazione**: abbiamo usato un ciclo `for` per creare 50 dataset simulati e raccolto i voti finali in un `array`/matrice.
+
+## 4. Analisi degli array e statistiche di simulazione
+
+Utilizziamo l’array `voti_mat` per calcolare medie e deviazioni.
+
+```{r}
+# Media e sd su simulazioni per ogni studente (rimuovendo eventuali NA)
+media_sim <- rowMeans(voti_mat, na.rm = TRUE)
+dev_sim <- apply(voti_mat, 1, sd, na.rm = TRUE)
+
+# Matrice di correlazione tra materie
+cor_mat <- cor(df_punteggi[, materie])
+
+lista_report <- list(
+  media_simulata = media_sim,
+  deviazione_sim = dev_sim,
+  correlazione_materie = cor_mat
+)
+
+# Visualizza correlazione
+round(lista_report$correlazione_materie, 2)
+```
+
+## 5. Visualizzazioni con ggplot2
+
+```{r}
+library(ggplot2)
+# 5.1 Distribuzione voti finali media simulata
+df_plot <- data.frame(
+  Studente = df_punteggi$Studente,
+  media = media_sim,
+  sd = dev_sim,
+  stringsAsFactors = FALSE
+)
+# Filtra eventuali valori non finiti
+df_plot <- df_plot[is.finite(df_plot$media), ]
+
+p1 <- ggplot(df_plot, aes(x = media)) +
+  geom_histogram(binwidth = 2, fill = "steelblue", color = "white") +
+  labs(title = "Distribuzione delle medie simulate")
+
+# 5.2 Heatmap correlazione materie
+library(reshape2)
+cor_df <- melt(cor_mat)
+
+p2 <- ggplot(cor_df, aes(Var1, Var2, fill = value)) +
+  geom_tile() +
+  scale_fill_gradient2(low = "blue", high = "red", mid = "white", midpoint = 0) +
+  theme_minimal() +
+  labs(title = "Heatmap correlazione materie")
+
+# Stampa grafici
+print(p1)
+print(p2)
+```
+
+## 6. Esercizi di approfondimento
+
+1. Modificare `summarize_class` per includere la percentuale di promossi (voto_finale >= 60).
+2. Aggiungere un ciclo `while` che ferma le simulazioni quando la media di tutti gli studenti supera un valore soglia.
+3. Salvare i risultati in un file CSV e in un oggetto lista per un report programmato.
+
+---
+## Soluzioni (Lezione 5)
+```{r}
+# Esercizio 1: percentuale di promossi
+summary_df2 <- summarize_class(df_punteggi)
+summary_df2$promosso <- summary_df2$voto_finale >= 60
+pct_promossi <- mean(summary_df2$promosso) * 100
+cat("Percentuale di promossi:", round(pct_promossi, 1), "%\n")
+
+# Esercizio 2: ciclo while fino a soglia media
+threshold <- 75
+iter <- 0
+repeat {
+  iter <- iter + 1
+  df_temp <- as.data.frame(lapply(lista_punteggi, function(v) sample(v, n, TRUE)))
+  df_temp$Studente <- df_punteggi$Studente
+  sim_sum <- summarize_class(df_temp)
+  media_tot <- mean(sim_sum$voto_finale)
+  if (media_tot > threshold) break
+}
+cat("Iterazioni per superare soglia:", iter, "(media =", round(media_tot,1), ")\n")
+
+# Esercizio 3: salvataggio dei risultati
+write.csv(summary_df, "class_summary.csv", row.names = FALSE)
+saveRDS(results_list, "simulation_results.rds")
+```
+---
+
+Con questo progetto avete applicato in un unico flusso:
+- Liste e data frame
+- Funzioni definite dall'utente con argomenti e ritorni complessi
+- Cicli `for` e manipolazione di array
+- Visualizzazioni con `ggplot2`
+
+Complimenti per aver completato il percorso!
