@@ -1,0 +1,91 @@
+---
+title: "Corso Base di R"
+output: html_document
+---
+
+# Corso Base di R
+In questo notebook impareremo le basi della sintassi di R, senza presupporre conoscenze informatiche pregresse.
+
+## Cos'è la sintassi?
+La sintassi è l’insieme di regole che definiscono come scrivere istruzioni in un linguaggio di programmazione.
+
+Proprietà della sintassi di R:
+- Assegnazione di variabili (`<-`, `=`)
+- Tipi di dati: numerico, carattere, booleano, vettori, liste, data frame
+- Indicizzazione di vettori e data frame
+- Definizione e invocazione di funzioni
+- Commenti con `#`
+
+```{r}
+# Esempi di assegnazione e tipi
+x <- 10            # numerico
+nome <- "Alice"    # carattere
+flag <- TRUE       # booleano
+v <- c(1, 2, 3, 4) # vettore numerico
+```
+
+```{r}
+# Definizione e chiamata di funzione
+saluta <- function(nome) {
+  paste("Ciao", nome)
+}
+saluta("Marco")
+```
+
+## Funzioni Matematiche di Base
+In R sono disponibili operatori e funzioni per calcoli elementari:
+- Addizione: `+`
+- Sottrazione: `-`
+- Moltiplicazione: `*`
+- Divisione: `/`
+- Somma di vettori: `sum()`
+- Prodotto di vettori: `prod()`
+- Valore minimo e massimo: `min()`, `max()`
+- Valore medio: `mean()`, mediana: `median()`
+- Valore assoluto: `abs()`
+- Radice quadrata: `sqrt()`
+- Esponenziale e logaritmo: `exp()`, `log()`
+
+```{r}
+# Esempi di funzioni di base
+a <- 5; b <- 2
+a + b       # 7
+a - b       # 3
+a * b       # 10
+a / b       # 2.5
+
+v <- c(1, 4, 6, 3)
+sum(v)      # 14
+prod(v)     # 72
+min(v)      # 1
+max(v)      # 6
+mean(v)     # 3.5
+median(v)   # 3.5
+
+abs(-7)     # 7
+sqrt(16)    # 4
+exp(1)      # ≈2.718
+log(10)     # ≈2.302
+```
+
+## Esempi Statistici: Distribuzione Normale
+Vediamo come generare dati da una distribuzione normale e visualizzarne l’istogramma.
+
+```{r}
+# Genera 1000 campioni da N(0,1) e plottane l'istogramma
+dati <- rnorm(1000, mean = 0, sd = 1)
+hist(dati, breaks = 30, col = "skyblue", main = "Istogramma di N(0,1)")
+```
+
+## Serie di Fibonacci
+Calcoliamo i primi n termini della serie di Fibonacci e mostriamo un semplice grafico.
+
+```{r}
+# Funzione ricorsiva per Fibonacci
+fib <- function(n) {
+  if (n <= 2) return(1)
+  fib(n - 1) + fib(n - 2)
+}
+# Calcola e plotta i primi 10 termini
+vals <- sapply(1:10, fib)
+plot(1:10, vals, type = "o", col = "tomato", xlab = "n", ylab = "Fibonacci(n)")
