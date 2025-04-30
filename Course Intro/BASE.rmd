@@ -86,6 +86,9 @@ fib <- function(n) {
   if (n <= 2) return(1)
   fib(n - 1) + fib(n - 2)
 }
+```
 # Calcola e plotta i primi 10 termini
+```{r}
 vals <- sapply(1:10, fib)
 plot(1:10, vals, type = "o", col = "tomato", xlab = "n", ylab = "Fibonacci(n)")
+```
